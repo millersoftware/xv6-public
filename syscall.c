@@ -6,7 +6,7 @@
 #include "proc.h"
 #include "x86.h"
 #include "syscall.h"
-
+int read_count = 0;
 // User code makes a system call with INT T_SYSCALL.
 // System call number in %eax.
 // Arguments on the stack, from the user call to the C
@@ -103,6 +103,8 @@ extern int sys_unlink(void);
 extern int sys_wait(void);
 extern int sys_write(void);
 extern int sys_uptime(void);
+extern int sys_wcupa(void);
+extern int sys_getreadcount(void);
 
 static int (*syscalls[])(void) = {
 [SYS_fork]    sys_fork,
@@ -126,6 +128,8 @@ static int (*syscalls[])(void) = {
 [SYS_link]    sys_link,
 [SYS_mkdir]   sys_mkdir,
 [SYS_close]   sys_close,
+[SYS_wcupa]    sys_wcupa,
+[SYS_getreadcount]    sys_getreadcount,
 };
 
 void
@@ -137,6 +141,10 @@ syscall(void)
   num = curproc->tf->eax;
   if(num > 0 && num < NELEM(syscalls) && syscalls[num]) {
     curproc->tf->eax = syscalls[num]();
+//   cprintf("%d", num);
+    if(num == 5){
+		read_count++;
+	}
   } else {
     cprintf("%d %s: unknown sys call %d\n",
             curproc->pid, curproc->name, num);

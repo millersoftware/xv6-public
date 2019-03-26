@@ -89,3 +89,20 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+int
+sys_wcupa(void)
+{
+  return 1871;
+}
+
+int
+sys_getreadcount(void)
+{
+  #ifndef SYSCALL_C
+  #define SYSCALL_C
+//  #include "syscall.c"
+  extern int read_count;
+  return read_count;
+  #endif
+}
